@@ -17,13 +17,13 @@ var Todo = mongoose.model('Todo', {
   }
 });
 
-var newTodo = new Todo({
-  text: 'Cook dinner'
-});
-var otherTodo = new Todo({
-  text: 'Feed cat',
-  completed: false,
-  completedAt: 123
-});
+// var newTodo = new Todo({
+//   text: 'Cook dinner'
+// });
+// var otherTodo = new Todo({
+//   text: 'Feed cat',
+//   completed: false,
+//   completedAt: 123
+// });
 
 module.exports = {Todo};

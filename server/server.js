@@ -26,6 +26,7 @@ app.listen(2500, () => {
   console.log('Started on port 2500');
 });
 
+module.exports = {app};
 
 // newTodo.save().then((doc) => {
 //   console.log('Saved todo ', doc)
