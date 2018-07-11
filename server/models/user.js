@@ -17,7 +17,7 @@ var UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    require: true,
+    required: true,
     minlength: 6
   },
   tokens: [ {
@@ -27,9 +27,11 @@ var UserSchema = new mongoose.Schema({
     },
     token: {
     type: String,
-    required: true
+    required: true,
     }
    }]
+}, {
+  usePushEach: true
 });
 
 UserSchema.methods.toJSON = function() {
@@ -42,11 +44,56 @@ UserSchema.methods.generateAuthToken = function() {
   var user = this;
   var access = 'auth';
   var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+  //console.log(token);
+  var mytoken = {access: access, token: token};
 
-  user.tokens.push({access, token});
-  user.save().then(() => {
-    return token;
+
+  try {
+   user.tokens.push({access, token});
+ } catch (e) {
+   console.log(e);
+ }
+  // user.tokens[0].access = access;
+  // user.tokens[0].token = token;
+  //user.tokens.push({access, token});
+
+   //
+   // user.findByIdAndUpdate(
+   //   {id: user._id},
+   //   {$push: {"tokens": {access, token}}},
+   //   function (error, success) {
+   //     if (error) {
+   //       console.log('err' + error);
+   //     } else {
+   //       console.log('ok' + success);
+   //     }
+   //   }
+   // );
+//  console.log('inside ', user);
+  user.save().then((user) => {
+  }).then ((user) => {
+  }).catch((e) => {
+    console.log('error ', e);
   });
+
+  return token;
 };
+
+UserSchema.statics.findByToken = function(token) {
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'abc123');
+     } catch (e) {
+       return Promise.reject();
+     }
+   return User.findOne({
+     '_id': decoded._id,
+     'tokens.token': token,
+     'tokens.access': 'auth'
+   });
+};
+
 var User = mongoose.model('User', UserSchema);
 module.exports = {User};
